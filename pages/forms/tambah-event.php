@@ -1,0 +1,804 @@
+﻿<?php include("../../controller/config.php");
+session_start();
+$session_id = $_SESSION['id_user'];
+if( isset($session_id) ){
+
+    // ambil id dari query string
+    $session_id_user = $_SESSION['id_user'];
+    $id = $_GET['id_user'];
+
+
+    // buat query hapus
+    $sql = "SELECT * FROM SIM_USER Where id_user=$session_id_user";
+    $sql_rows = mysqli_query($db, "SELECT * FROM SIM_USER");
+    $sql_user_pending = mysqli_query($db, "SELECT * FROM SIM_USER Where status='Pending'");
+    $sql_user_aktif = mysqli_query($db, "SELECT * FROM SIM_USER Where status='Aktif'");
+    $sql_total_berita = mysqli_query($db, "SELECT * FROM SIM_BERITA");
+    $sql_total_event = mysqli_query($db, "SELECT * FROM SIM_TAMBAH_EVENT");
+
+    $query = mysqli_query($db, $sql);
+    $user = mysqli_fetch_assoc($query);
+    $cek = mysqli_num_rows($sql_rows);
+    $user_pending = mysqli_num_rows($sql_user_pending);
+    $user_aktif = mysqli_num_rows($sql_user_aktif);
+    $total_berita = mysqli_num_rows($sql_total_berita);
+    $total_event = mysqli_num_rows($sql_total_event);
+
+} else {
+    header('Location: ../examples/logged.html');
+    die("akses dilarang...");
+}
+// jika data yang di-edit tidak ditemukan
+if( mysqli_num_rows($query) < 1 ){
+    header('Location: ../pages/examples/nulldata.html');
+    die("data tidak ditemukan...");
+}
+?>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title>Tambah Event SISTEM INFORMASI MASJID</title>
+    <!-- Favicon-->
+    <link rel="icon" href="../../favicon.ico" type="image/x-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,cyrillic-ext" rel="stylesheet"
+          type="text/css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css">
+
+    <!-- Bootstrap Core Css -->
+    <link href="../../plugins/bootstrap/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Waves Effect Css -->
+    <link href="../../plugins/node-waves/waves.css" rel="stylesheet"/>
+
+    <!-- Animation Css -->
+    <link href="../../plugins/animate-css/animate.css" rel="stylesheet"/>
+
+
+    <!-- Wait Me Css -->
+    <link href="../../plugins/waitme/waitMe.css" rel="stylesheet"/>
+
+
+    <!-- Bootstrap Select Css -->
+    <link href="../../plugins/bootstrap-select/css/bootstrap-select.css" rel="stylesheet"/>
+
+
+    <!-- Bootstrap Material Datetime Picker Css -->
+    <link href="../../plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css"
+          rel="stylesheet"/>
+
+
+    <!-- Sweet Alert Css -->
+    <link href="../../plugins/sweetalert/sweetalert.css" rel="stylesheet"/>
+
+    <!-- Custom Css -->
+    <link href="../../css/style.css" rel="stylesheet">
+
+    <!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
+    <link href="../../css/themes/all-themes.css" rel="stylesheet"/>
+</head>
+
+<body class="theme-red">
+<!-- Page Loader -->
+<div class="page-loader-wrapper">
+    <div class="loader">
+        <div class="preloader">
+            <div class="spinner-layer pl-red">
+                <div class="circle-clipper left">
+                    <div class="circle"></div>
+                </div>
+                <div class="circle-clipper right">
+                    <div class="circle"></div>
+                </div>
+            </div>
+        </div>
+        <p>Please wait...</p>
+    </div>
+</div>
+<!-- #END# Page Loader -->
+<!-- Overlay For Sidebars -->
+<div class="overlay"></div>
+<!-- #END# Overlay For Sidebars -->
+<!-- Search Bar -->
+<div class="search-bar">
+    <div class="search-icon">
+        <i class="material-icons">search</i>
+    </div>
+    <input type="text" placeholder="START TYPING...">
+    <div class="close-search">
+        <i class="material-icons">close</i>
+    </div>
+</div>
+<!-- #END# Search Bar -->
+<!-- Top Bar -->
+<nav class="navbar">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a href="javascript:void(0);" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false"></a>
+            <a href="javascript:void(0);" class="bars"></a>
+            <a class="navbar-brand" href="../../index.php">SISTEM INFORMASI MASJID</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- Call Search -->
+                <li><a href="javascript:void(0);" class="js-search" data-close="true"><i class="material-icons">search</i></a></li>
+                <!-- #END# Call Search -->
+                <!-- Notifications -->
+                <li class="dropdown">
+                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button">
+                        <i class="material-icons">notifications</i>
+                        <span class="label-count">7</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li class="header">NOTIFICATIONS</li>
+                        <li class="body">
+                            <ul class="menu">
+                                <li>
+                                    <a href="javascript:void(0);">
+                                        <div class="icon-circle bg-light-green">
+                                            <i class="material-icons">person_add</i>
+                                        </div>
+                                        <div class="menu-info">
+                                            <h4>12 new members joined</h4>
+                                            <p>
+                                                <i class="material-icons">access_time</i> 14 mins ago
+                                            </p>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);">
+                                        <div class="icon-circle bg-cyan">
+                                            <i class="material-icons">add_shopping_cart</i>
+                                        </div>
+                                        <div class="menu-info">
+                                            <h4>4 sales made</h4>
+                                            <p>
+                                                <i class="material-icons">access_time</i> 22 mins ago
+                                            </p>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);">
+                                        <div class="icon-circle bg-red">
+                                            <i class="material-icons">delete_forever</i>
+                                        </div>
+                                        <div class="menu-info">
+                                            <h4><b>Nancy Doe</b> deleted account</h4>
+                                            <p>
+                                                <i class="material-icons">access_time</i> 3 hours ago
+                                            </p>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);">
+                                        <div class="icon-circle bg-orange">
+                                            <i class="material-icons">mode_edit</i>
+                                        </div>
+                                        <div class="menu-info">
+                                            <h4><b>Nancy</b> changed name</h4>
+                                            <p>
+                                                <i class="material-icons">access_time</i> 2 hours ago
+                                            </p>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);">
+                                        <div class="icon-circle bg-blue-grey">
+                                            <i class="material-icons">comment</i>
+                                        </div>
+                                        <div class="menu-info">
+                                            <h4><b>John</b> commented your post</h4>
+                                            <p>
+                                                <i class="material-icons">access_time</i> 4 hours ago
+                                            </p>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);">
+                                        <div class="icon-circle bg-light-green">
+                                            <i class="material-icons">cached</i>
+                                        </div>
+                                        <div class="menu-info">
+                                            <h4><b>John</b> updated status</h4>
+                                            <p>
+                                                <i class="material-icons">access_time</i> 3 hours ago
+                                            </p>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);">
+                                        <div class="icon-circle bg-purple">
+                                            <i class="material-icons">settings</i>
+                                        </div>
+                                        <div class="menu-info">
+                                            <h4>Settings updated</h4>
+                                            <p>
+                                                <i class="material-icons">access_time</i> Yesterday
+                                            </p>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="footer">
+                            <a href="javascript:void(0);">View All Notifications</a>
+                        </li>
+                    </ul>
+                </li>
+                <!-- #END# Notifications -->
+                <!-- Tasks -->
+                <li class="dropdown">
+                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button">
+                        <i class="material-icons">flag</i>
+                        <span class="label-count">9</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li class="header">TASKS</li>
+                        <li class="body">
+                            <ul class="menu tasks">
+                                <li>
+                                    <a href="javascript:void(0);">
+                                        <h4>
+                                            Footer display issue
+                                            <small>32%</small>
+                                        </h4>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-pink" role="progressbar" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100" style="width: 32%">
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);">
+                                        <h4>
+                                            Make new buttons
+                                            <small>45%</small>
+                                        </h4>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-cyan" role="progressbar" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);">
+                                        <h4>
+                                            Create new dashboard
+                                            <small>54%</small>
+                                        </h4>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-teal" role="progressbar" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100" style="width: 54%">
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);">
+                                        <h4>
+                                            Solve transition issue
+                                            <small>65%</small>
+                                        </h4>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-orange" role="progressbar" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100" style="width: 65%">
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);">
+                                        <h4>
+                                            Answer GitHub questions
+                                            <small>92%</small>
+                                        </h4>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-purple" role="progressbar" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100" style="width: 92%">
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="footer">
+                            <a href="javascript:void(0);">View All Tasks</a>
+                        </li>
+                    </ul>
+                </li>
+                <!-- #END# Tasks -->
+                <li class="pull-right"><a href="javascript:void(0);" class="js-right-sidebar" data-close="true"><i class="material-icons">more_vert</i></a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<!-- #Top Bar -->
+<section>
+    <!-- Left Sidebar -->
+    <aside id="leftsidebar" class="sidebar">
+        <!-- User Info -->
+        <div class="user-info">
+            <div class="image">
+                <img src="images/user.png" width="48" height="48" alt="User" />
+            </div>
+            <div class="info-container">
+                <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <?php echo $user['nama'];  ?>
+
+                </div>
+                <div class="email"><?php echo "Masjid ".$user['nama_masjid'];  ?></div>
+                <div class="btn-group user-helper-dropdown">
+                    <i class="material-icons" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">keyboard_arrow_down</i>
+                    <ul class="dropdown-menu pull-right">
+                        <li><a href="javascript:void(0);"><i class="material-icons">person</i>Profile</a></li>
+                        <li role="seperator" class="divider"></li>
+                        <li><a href="javascript:void(0);"><i class="material-icons">group</i>Followers</a></li>
+                        <li><a href="javascript:void(0);"><i class="material-icons">shopping_cart</i>Sales</a></li>
+                        <li><a href="javascript:void(0);"><i class="material-icons">favorite</i>Likes</a></li>
+                        <li role="seperator" class="divider"></li>
+                        <li><a href="../../controller/api-signout.php"><i class="material-icons">input</i>Sign Out
+                            </a>
+
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- #User Info -->
+        <!-- Menu -->
+        <div class="menu">
+            <ul class="list">
+                <li class="header">MAIN NAVIGATION</li>
+                <li class="active">
+                    <a href="../../index.php">
+                        <i class="material-icons">home</i>
+                        <span>Home</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0);" class="menu-toggle">
+                        <i class="material-icons">assignment</i>
+                        <span>Tambah Data</span>
+                    </a>
+                    <ul class="ml-menu">
+                        <li>
+                            <a href="tambah-data-user.php">Tambah Data User</a>
+                        </li>
+                        <li>
+                            <a href="../forms/tambah-event.php">Tambah Event</a>
+                        </li>
+                        <li>
+                            <a href="../forms/tambah-berita.php">Tambah Berita</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="javascript:void(0);" class="menu-toggle">
+                        <i class="material-icons">view_list</i>
+                        <span>Semua Data</span>
+                    </a>
+                    <ul class="ml-menu">
+                        <li>
+                            <a href="../tables/data-user.php">Data User Aktif</a>
+                        </li>
+                        <li>
+                            <a href="../tables/data-berita.php">Data Berita</a>
+                        </li>
+                        <li>
+                            <a href="../tables/data-event.php">Data Event</a>
+                        </li>
+                        <!--<li>
+                            <a href="pages/tables/editable-table.html">Editable Tables</a>
+                        </li> -->
+                    </ul>
+                </li>
+                <li>
+                    <a href="javascript:void(0);" class="menu-toggle">
+                        <i class="material-icons">map</i>
+                        <span>Maps</span>
+                    </a>
+                    <ul class="ml-menu">
+                        <li>
+                            <a href="pages/maps/google.html">Google Map</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="../changelogs.html">
+                        <i class="material-icons">update</i>
+                        <span>Checkpoints</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <!-- #Menu -->
+        <!-- Footer -->
+        <div class="legal">
+            <div class="copyright">
+                &copy; 2016 - 2018 <a href="javascript:void(0);">SISTEM INFORMASI MASJID</a>.
+            </div>
+            <div class="version">
+                <b>Version: </b> 1.0.0
+            </div>
+        </div>
+        <!-- #Footer -->
+    </aside>
+    <!-- #END# Left Sidebar -->
+    <!-- Right Sidebar -->
+    <aside id="rightsidebar" class="right-sidebar">
+        <ul class="nav nav-tabs tab-nav-right" role="tablist">
+            <li role="presentation" class="active"><a href="#skins" data-toggle="tab">SKINS</a></li>
+            <li role="presentation"><a href="#settings" data-toggle="tab">SETTINGS</a></li>
+        </ul>
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade in active in active" id="skins">
+                <ul class="demo-choose-skin">
+                    <li data-theme="red" class="active">
+                        <div class="red"></div>
+                        <span>Red</span>
+                    </li>
+                    <li data-theme="pink">
+                        <div class="pink"></div>
+                        <span>Pink</span>
+                    </li>
+                    <li data-theme="purple">
+                        <div class="purple"></div>
+                        <span>Purple</span>
+                    </li>
+                    <li data-theme="deep-purple">
+                        <div class="deep-purple"></div>
+                        <span>Deep Purple</span>
+                    </li>
+                    <li data-theme="indigo">
+                        <div class="indigo"></div>
+                        <span>Indigo</span>
+                    </li>
+                    <li data-theme="blue">
+                        <div class="blue"></div>
+                        <span>Blue</span>
+                    </li>
+                    <li data-theme="light-blue">
+                        <div class="light-blue"></div>
+                        <span>Light Blue</span>
+                    </li>
+                    <li data-theme="cyan">
+                        <div class="cyan"></div>
+                        <span>Cyan</span>
+                    </li>
+                    <li data-theme="teal">
+                        <div class="teal"></div>
+                        <span>Teal</span>
+                    </li>
+                    <li data-theme="green">
+                        <div class="green"></div>
+                        <span>Green</span>
+                    </li>
+                    <li data-theme="light-green">
+                        <div class="light-green"></div>
+                        <span>Light Green</span>
+                    </li>
+                    <li data-theme="lime">
+                        <div class="lime"></div>
+                        <span>Lime</span>
+                    </li>
+                    <li data-theme="yellow">
+                        <div class="yellow"></div>
+                        <span>Yellow</span>
+                    </li>
+                    <li data-theme="amber">
+                        <div class="amber"></div>
+                        <span>Amber</span>
+                    </li>
+                    <li data-theme="orange">
+                        <div class="orange"></div>
+                        <span>Orange</span>
+                    </li>
+                    <li data-theme="deep-orange">
+                        <div class="deep-orange"></div>
+                        <span>Deep Orange</span>
+                    </li>
+                    <li data-theme="brown">
+                        <div class="brown"></div>
+                        <span>Brown</span>
+                    </li>
+                    <li data-theme="grey">
+                        <div class="grey"></div>
+                        <span>Grey</span>
+                    </li>
+                    <li data-theme="blue-grey">
+                        <div class="blue-grey"></div>
+                        <span>Blue Grey</span>
+                    </li>
+                    <li data-theme="black">
+                        <div class="black"></div>
+                        <span>Black</span>
+                    </li>
+                </ul>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="settings">
+                <div class="demo-settings">
+                    <p>GENERAL SETTINGS</p>
+                    <ul class="setting-list">
+                        <li>
+                            <span>Report Panel Usage</span>
+                            <div class="switch">
+                                <label><input type="checkbox" checked><span class="lever"></span></label>
+                            </div>
+                        </li>
+                        <li>
+                            <span>Email Redirect</span>
+                            <div class="switch">
+                                <label><input type="checkbox"><span class="lever"></span></label>
+                            </div>
+                        </li>
+                    </ul>
+                    <p>SYSTEM SETTINGS</p>
+                    <ul class="setting-list">
+                        <li>
+                            <span>Notifications</span>
+                            <div class="switch">
+                                <label><input type="checkbox" checked><span class="lever"></span></label>
+                            </div>
+                        </li>
+                        <li>
+                            <span>Auto Updates</span>
+                            <div class="switch">
+                                <label><input type="checkbox" checked><span class="lever"></span></label>
+                            </div>
+                        </li>
+                    </ul>
+                    <p>ACCOUNT SETTINGS</p>
+                    <ul class="setting-list">
+                        <li>
+                            <span>Offline</span>
+                            <div class="switch">
+                                <label><input type="checkbox"><span class="lever"></span></label>
+                            </div>
+                        </li>
+                        <li>
+                            <span>Location Permission</span>
+                            <div class="switch">
+                                <label><input type="checkbox" checked><span class="lever"></span></label>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </aside>
+    <!-- #END# Right Sidebar -->
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <!-- Vertical Layout | With Floating Label -->
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header">
+                        <h2>
+
+                            Tambah Event Masjid.
+                            <small>Isikan dengan benar event yang akan dimulai.</small>
+                        </h2>
+                        <ul class="header-dropdown m-r--5">
+                            <li class="dropdown">
+                                <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown"
+                                   role="button" aria-haspopup="true" aria-expanded="false">
+                                    <i class="material-icons">more_vert</i>
+                                </a>
+                                <ul class="dropdown-menu pull-right">
+                                    <li><a href="javascript:void(0);">Action</a></li>
+                                    <li><a href="javascript:void(0);">Another action</a></li>
+                                    <li><a href="javascript:void(0);">Something else here</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="body">
+                        <form method="post" action="../../controller/api-tambah_event.php">
+                            <div class="form-group form-float">
+                                <div class="form-line">
+                                    <input type="text" id="judul_event" class="form-control" name="judul_event">
+                                    <label class="form-label">Judul Event</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group form-float">
+                                <div class="form-line">
+                                    <input type="text" id="nama_masjid" class="form-control" name="nama_masjid">
+                                    <label class="form-label">Nama Masjid</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group form-float">
+                                <div class="form-line">
+                                    <input type="text" id="pengelola_event" class="form-control" name="pengelola_event">
+                                    <label class="form-label">Pengelola Masjid</label>
+                                </div>
+                            </div>
+
+                            <h2 class="card-inside-title">Kategori Event</h2>
+<!--                            <div class="body">-->
+                                <div class="row clearfix">
+                                    <div class="col-sm-6">
+                                        <select class="form-control show-tick" name="kategori_event">
+                                            <option value="">-- Pilih kategori --</option>
+                                            <option name="kategori_event" value="Dakwah">Dakwah</option>
+                                            <option name="kategori_event" value="Tafsir Al-Qur'an">Tafsir Al-Qur'an</option>
+                                            <option name="kategori_event" value="Tadarus">Tadarus</option>
+                                            <option name="kategori_event" value="Kajian Dhuha">Kajian Dhuha</option>
+                                            <option name="kategori_event" value="Kajian Shirah dan Sahabat">Kajian Shirah dan Sahabat</option>
+                                        </select>
+                                    </div>
+                                </div>
+<!--                            </div>-->
+
+                            <h2 class="card-inside-title">Tanggal Event</h2>
+<!--                            <div class="row clearfix">-->
+<!--                                <div class="col-sm-4">-->
+                                    <div class="form-group">
+                                        <div class="form-line">
+                                            <input type="text" class="datepicker form-control" max="100" name="tgl_event"
+                                                   placeholder="Pilih tanggal anda...">
+                                        </div>
+                                    </div>
+<!--                                </div>-->
+<!--                            </div>-->
+
+                            <h2 class="card-inside-title">Kota Event</h2>
+                            <div class="body">
+                                <div class="row clearfix">
+                                    <div class="col-sm-6">
+                                        <select class="form-control show-tick" name="kota_event">
+                                            <option value="">-- Kota Event --</option>
+                                            <option name="kota_event" value="Nanggro Aceh Darussalam">Nanggro Aceh Darussalam</option>
+                                            <option name="kota_event" value="Sumatera Utara">Sumatera Utara</option>
+                                            <option name="kota_event" value="Sumatera Barat">Sumatera Barat</option>
+                                            <option name="kota_event" value="Riau">Riau</option>
+                                            <option name="kota_event" value="Kepulauan Riau">Kepulauan Riau</option>
+                                            <option name="kota_event" value="Jambi">Jambi</option>
+                                            <option name="kota_event" value="Sumatera Selatan">Sumatera Selatan</option>
+                                            <option name="kota_event" value="Bangka Belitung">Bangka Belitung</option>
+                                            <option name="kota_event" value="Bengkulu">Bengkulu</option>
+                                            <option name="kota_event" value="Lampung ">Lampung </option>
+                                            <option name="kota_event" value="DKI Jakarta">DKI Jakarta</option>
+                                            <option name="kota_event" value="Jawa Barat">Jawa Barat</option>
+                                            <option name="kota_event" value="Banten">Banten</option>
+                                            <option name="kota_event" value="Jawa Tengah">Jawa Tengah</option>
+                                            <option name="kota_event" value="Daerah Istimewa Yogyakarta">Daerah Istimewa Yogyakarta</option>
+                                            <option name="kota_event" value="Jawa Timur">Jawa Timur</option>
+                                            <option name="kota_event" value="Bali">Bali</option>
+                                            <option name="kota_event" value="Nusa Tenggara Barat">Nusa Tenggara Barat</option>
+                                            <option name="kota_event" value="Nusa Tenggara Timur">Nusa Tenggara Timur</option>
+                                            <option name="kota_event" value="Kalimantan Barat">Kalimantan Barat</option>
+                                            <option name="kota_event" value="Kalimantan Tengah">Kalimantan Tengah</option>
+                                            <option name="kota_event" value="Kalimantan Selatan">Kalimantan Selatan</option>
+                                            <option name="kota_event" value="Kalimantan Timur">Kalimantan Timur</option>
+                                            <option name="kota_event" value="Kalimantan Utara">Kalimantan Utara</option>
+                                            <option name="kota_event" value="Sulawesi Utara">Sulawesi Utara</option>
+                                            <option name="kota_event" value="Sulawesi Barat">Sulawesi Barat</option>
+                                            <option name="kota_event" value="Sulawesi Tengah">Sulawesi Tengah</option>
+                                            <option name="kota_event" value="Sulawesi Tenggara">Sulawesi Tenggara</option>
+                                            <option name="kota_event" value="Sulawesi Selatan">Sulawesi Selatan</option>
+                                            <option name="kota_event" value="Gorontalo">Gorontalo</option>
+                                            <option name="kota_event" value="Maluku">Maluku</option>
+                                            <option name="kota_event" value="Maluku Utara">Maluku Utara</option>
+                                            <option name="kota_event" value="Papua Barat">Papua Barat</option>
+                                            <option name="kota_event" value="Papua">Papua</option>
+                                        </select
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h2 class="card-inside-title">Alamat Event</h2>
+                            <div class="form-group form-float">
+                                <div class="form-line">
+                                    <input type="text" id="alamat_event" class="form-control" name="alamat_event">
+                                    <label class="form-label">Alamat Event</label>
+                                </div>
+                            </div>
+
+
+                            <h2 class="card-inside-title">Waktu Mulai Event</h2>
+<!--                            <div class="row clearfix">-->
+<!--                                <div class="col-sm-4">-->
+                                    <div class="form-group">
+                                        <div class="form-line">
+                                            <input type="text" class="timepicker form-control" name="waktu_mulai_event"
+                                                   placeholder="Waktu mulai...">
+                                        </div>
+<!--                                    </div>-->
+<!--                                </div>-->
+                            </div>
+
+                            <h2 class="card-inside-title">Waktu Selesai Event</h2>
+<!--                            <div class="row clearfix">-->
+<!--                                <div class="col-sm-4">-->
+                                    <div class="form-group">
+                                        <div class="form-line">
+                                            <input type="text" class="timepicker form-control" name="waktu_selesai_event"
+                                                   placeholder="Waktu selesai...">
+                                        </div>
+                                    </div>
+<!--                                </div>-->
+<!--                            </div>-->
+
+                            <h2 class="card-inside-title">Kuota Event</h2>
+                            <div class="form-group form-float">
+                                <div class="form-line">
+                                    <input type="text" id="kuota_event" class="form-control" name="kuota_event">
+                                    <label class="form-label">Kuota Event</label>
+                                </div>
+                            </div>
+
+                            <h2 class="card-inside-title">Deskripsi Event</h2>
+                            <div class="form-group form-float">
+                                <div class="form-line">
+                                    <input type="text" id="deskripsi_event" class="form-control" name="deskripsi_event">
+                                    <label class="form-label">Deskripsi Event</label>
+                                </div>
+                            </div>
+
+
+                            <input type="checkbox" id="remember_me_2" class="filled-in" checked="true" disabled="true">
+                            <label for="remember_me_2">Setuju dengan peryaratan yang ditentukan oleh sistem.</label>
+                            <br>
+<!--                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">-->
+                                <button class="btn btn-primary m-t-15 waves-effect" name="tambah_event">Daftarkan Event !
+                                </button>
+<!--                            </div>-->
+
+<!--                        <button type="button" class="btn btn-primary m-t-15 waves-effect" name="tambah_event">Daftarkan !-->
+<!--                        </button>-->
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Vertical Layout | With Floating Label -->
+        <!-- Horizontal Layout -->
+        <!-- #END# Multi Column -->
+    </div>
+</section>
+
+<!-- Jquery Core Js -->
+<script src="../../plugins/jquery/jquery.min.js"></script>
+
+<!-- Bootstrap Core Js -->
+<script src="../../plugins/bootstrap/js/bootstrap.js"></script>
+
+<!-- Select Plugin Js -->
+<script src="../../plugins/bootstrap-select/js/bootstrap-select.js"></script>
+
+<!-- Slimscroll Plugin Js -->
+<script src="../../plugins/jquery-slimscroll/jquery.slimscroll.js"></script>
+
+<!-- Waves Effect Plugin Js -->
+<script src="../../plugins/node-waves/waves.js"></script>
+
+<!-- Autosize Plugin Js -->
+<script src="../../plugins/autosize/autosize.js"></script>
+
+<!-- Moment Plugin Js -->
+<script src="../../plugins/momentjs/moment.js"></script>
+
+<!-- Bootstrap Material Datetime Picker Plugin Js -->
+<script src="../../plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js"></script>
+
+
+<!-- Custom Js -->
+<script src="../../js/pages/forms/basic-form-elements.js"></script>
+<script src="../../js/admin.js"></script>
+
+<!-- Demo Js -->
+<script src="../../js/demo.js"></script>
+</body>
+
+</html>
