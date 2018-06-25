@@ -33,6 +33,7 @@ if( isset($session_id) ){
 if( mysqli_num_rows($query) < 1 ){
         header('Location: ../pages/examples/nulldata.html');
     die("data tidak ditemukan...");
+    
 }
  ?>
 
